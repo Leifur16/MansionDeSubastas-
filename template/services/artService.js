@@ -66,17 +66,18 @@ class ArtService extends EventEmitter {
             description: art.description,
             isAuctionItem: art.isAuctionItem
           },
-          err => {
+          (err, createdArt) => {
+            console.log("found id");
             if (err) {
               if (err.reason === undefined) {
-                // the model was incorrect
+                // the body was incorrect
                 this.emit(this.events.CREATE_ART, err.reason);
               } else {
                 // something went wrong in the database when creating
                 this.emit(this.events.CREATE_ART);
               }
             } else {
-              this.emit(this.events.CREATE_ART);
+              this.emit(this.events.CREATE_ART, createdArt);
             }
           }
         );
