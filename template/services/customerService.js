@@ -45,19 +45,31 @@ class CustomerService extends EventEmitter {
   getCustomerAuctionBids(customerId) {
     // Your implementation goes here
     // Should emit a GET_CUSTOMER_AUCTION_BIDS event when the data is available
-    console.log("inside service");
-    console.log("id: ", customerId);
-    AuctionBid.find({ customerId: customerId }, (err, bids) => {
-      console.log("bids: ", bids);
-      console.log("error: ", err);
+
+    Customer.findById(customerId, err => {
       if (err) {
         if (err.reason === undefined) {
           this.emit(this.events.GET_CUSTOMER_AUCTION_BIDS, err.reason);
         } else {
           this.emit(this.events.GET_CUSTOMER_AUCTION_BIDS);
         }
+      } else {
+        //valid id
+        AuctionBid.find({ customerId: customerId }, (err, bids) => {
+          if (err) {
+            if (err.reason === undefined) {
+              this.emit(this.events.GET_CUSTOMER_AUCTION_BIDS, err.reason);
+            } else {
+              this.emit(this.events.GET_CUSTOMER_AUCTION_BIDS);
+            }
+          } else if (bids.length == 0) {
+            // no bids
+            this.emit(this.events.GET_CUSTOMER_AUCTION_BIDS, undefined);
+          } else {
+            this.emit(this.events.GET_CUSTOMER_AUCTION_BIDS, bids);
+          }
+        });
       }
-      this.emit(this.events.GET_CUSTOMER_AUCTION_BIDS, bids);
     });
   }
 
