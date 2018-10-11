@@ -11,6 +11,7 @@ const router = express.Router();
 const port = 3000;
 const app = express();
 
+// --- Art --- ///
 router.get("/api/arts", (req, res) => {
   const artServiceInstance = new artService();
   artServiceInstance.on("GET_ALL_ARTS", result => {
@@ -48,7 +49,7 @@ router.post("/api/arts", (req, res) => {
 
   artServiceInstance.on("CREATE_ART", result => {
     if (result === undefined) {
-      return res.status(404).send();
+      return res.status(400).send();
     } else if (result === null) {
       return res.status(500).send();
     } else {
@@ -57,6 +58,69 @@ router.post("/api/arts", (req, res) => {
   });
 
   artServiceInstance.createArt(art);
+});
+
+// --- customers --- //
+
+router.get("/api/customers", (req, res) => {
+  const customerServiceInstance = new customerService();
+  customerServiceInstance.on("GET_ALL_CUSTOMERS", result => {
+    if (result === undefined) {
+      return res.status(404).send();
+    } else if (result === null) {
+      return res.status(500).send();
+    } else {
+      return res.status(201).send(result);
+    }
+  });
+
+  customerServiceInstance.getAllCustomers();
+});
+
+router.get("/api/customers/:id", (req, res) => {
+  const id = req.params.id;
+  const customerServiceInstance = new customerService();
+  customerServiceInstance.on("GET_CUSTOMER_BY_ID", result => {
+    if (result === undefined) {
+      return res.status(404).send();
+    } else if (result === null) {
+      return res.status(500).send();
+    } else {
+      return res.status(200).send(result);
+    }
+  });
+  customerServiceInstance.getCustomerById(id);
+});
+
+router.post("/api/customers", (req, res) => {
+  const customer = req.body;
+  const customerServiceInstance = new customerService();
+  customerServiceInstance.on("CREATE_CUSTOMER", result => {
+    if (result === undefined) {
+      return res.status(400).send();
+    } else if (result === null) {
+      return res.status(500).send();
+    } else {
+      return res.status(201).send(result);
+    }
+  });
+  customerServiceInstance.createCustomer(customer);
+});
+
+router.get("/api/customers/:id/auction-bids", (req, res) => {
+  console.log("inside the function");
+  const id = req.params.id;
+  const customerServiceInstance = new customerService();
+  customerServiceInstance.on("GET_CUSTOMER_AUCTION_BIDS", result => {
+    if (result === undefined) {
+      return res.status(404).send();
+    } else if (result === null) {
+      return res.status(500).send();
+    } else {
+      return res.status(200).send(result);
+    }
+  });
+  customerServiceInstance.getCustomerAuctionBids(id);
 });
 
 app.use(bodyParser.json());
