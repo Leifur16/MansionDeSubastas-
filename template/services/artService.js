@@ -67,7 +67,6 @@ class ArtService extends EventEmitter {
             isAuctionItem: art.isAuctionItem
           },
           (err, createdArt) => {
-            console.log("found id");
             if (err) {
               if (err.reason === undefined) {
                 // the body was incorrect
