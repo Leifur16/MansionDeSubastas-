@@ -6,7 +6,8 @@ const auctionBidSchema = require("../schemas/auctionBid");
 const customerSchema = require("../schemas/customer");
 
 const connection = mongoose.createConnection(
-  "mongodb://abc123:abc123@ds129770.mlab.com:29770/leifur16-bjarki15-mansion-de-subastas",
+  //"mongodb://abc123:abc123@ds129770.mlab.com:29770/leifur16-bjarki15-mansion-de-subastas",
+   "mongodb://abc123:abc123@ds113849.mlab.com:13849/lbjarki15-mansion-de-subastas",
   { useNewUrlParser: true }
 );
 

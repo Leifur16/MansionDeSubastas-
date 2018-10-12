@@ -53,9 +53,19 @@ router.post("/api/arts", (req, res) => {
     } else if (result === null) {
       return res.status(500).send();
     } else {
-      return res.status(201).send(result);
+      const ret = {
+        images: result.images,
+        isAuctionItem: result.isAuctionItem,
+        title : result.title,
+        artistId: result.artistId,
+        date: result.date,
+        description: result.description
+      };
+      return res.status(201).send(ret);
     }
   });
+
+
 
   artServiceInstance.createArt(art);
 });
