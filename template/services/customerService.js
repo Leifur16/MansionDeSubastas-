@@ -76,7 +76,6 @@ class CustomerService extends EventEmitter {
   createCustomer(customer) {
     // Your implementation goes here
     // Should emit a CREATE_CUSTOMER event when the data is available
-    console.log("?", customer.email);
     Customer.create(
       {
         name: customer.name,
@@ -87,7 +86,6 @@ class CustomerService extends EventEmitter {
       (err, createdCustomer) => {
         if (err) {
           if (err.reason === undefined) {
-            console.log("model was incorect");
             this.emit(this.events.CREATE_CUSTOMER, err.reason);
           } else {
             this.emit(this.events.CREATE_CUSTOMER);
