@@ -52,6 +52,7 @@ class AuctionService extends EventEmitter {
 				}
 			}
 			else {
+
 				Customer.findById(auction.auctionWinner, (err, customer) => {
 					if (err) {
 						if (err.reason === undefined) {
@@ -59,12 +60,14 @@ class AuctionService extends EventEmitter {
 						} else {
 							this.emit(this.events.GET_AUCTION_WINNER);
 						}
-					} else {
+					} else if(auction.endDate > Date.now()) {
+						this.emit(this.events.GET_AUCTION_WINNER, "ONGOING");
+					}else {
 						this.emit(this.events.GET_AUCTION_WINNER, customer);
 					}
-				})
+				});
 			}
-			})
+		});
 	};
 
 	createAuction(auction) {
@@ -134,8 +137,55 @@ class AuctionService extends EventEmitter {
 	};
 
 	placeNewBid(auctionId, customerId, price) {
-		// Your implementation goes here
-        // Should emit a PLACE_NEW_BID event when the data is available
+		AuctionBid.find({auctionId: auctionId, customerId: customerId}, (err, auctionBid) => {
+			if (err) {
+				if (err.reason === undefined) {
+					this.emit(this.events.PLACE_NEW_BID, err.reason);
+				} else {
+					this.emit(this.events.PLACE_NEW_BID);
+				}
+			} else {
+				const ObjArrToObj = auctionBid[0];
+				Auction.findById(auctionId, (err, auction) => {
+					if (err) {
+						if (err.reason === undefined) {
+							this.emit(this.events.PLACE_NEW_BID, err.reason);
+						} else {
+							this.emit(this.events.PLACE_NEW_BID);
+						}
+					} else {
+						if(price > auction.minimumPrice && price > ObjArrToObj.price && auction.endDate > Date.now()) {
+							auction.auctionWinner = customerId;
+							AuctionBid.create(
+								{
+									id: ObjArrToObj.id,
+									auctionId: ObjArrToObj.auctionId,
+									customerId: ObjArrToObj.customerId,
+									price: price
+								},
+								(err, createdAuctionBid) => {
+									if (err) {
+			              if (err.reason === undefined) {
+			                // the body was incorrect
+			                this.emit(this.events.PLACE_NEW_BID, err.reason);
+			              } else {
+			                // something went wrong in the database when creating
+			                this.emit(this.events.PLACE_NEW_BID);
+			              }
+			            } else {
+			              this.emit(this.events.PLACE_NEW_BID, createdAuctionBid);
+			            }
+								}
+							);
+						} else if(auction.endDate < Date.now()){
+							this.emit(this.events.PLACE_NEW_BID, "FORBIDDEN");
+						} else {
+							this.emit(this.events.PLACE_NEW_BID, "FAIL");
+						}
+					}
+				});
+			}
+		});
 	};
 };
 
