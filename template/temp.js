@@ -106,7 +106,7 @@ router.get("/api/auctions/:id/winner", (req, res) => {
   auctionServiceInstance.getAuctionWinner(id);
 });
 
-router.post("api/auctions", (req, res) => {
+router.post("/api/auctions", (req, res) => {
   const auction = req.body;
   const auctionServiceInstance = new auctionService();
   auctionServiceInstance.on("CREATE_AUCTION", result => {
@@ -120,6 +120,22 @@ router.post("api/auctions", (req, res) => {
   });
 
   auctionServiceInstance.createAuction(auction);
+});
+
+router.get("/api/auctions/:id/bids", (req, res) => {
+  const id = req.params.id;
+  const auctionServiceInstance = new auctionService();
+  auctionServiceInstance.on("GET_AUCTION_BIDS_WITHIN_AUCTION", result => {
+    if (result === undefined) {
+      return res.status(404).send();
+    } else if (result === null) {
+      return res.status(500).send();
+    } else {
+      return res.status(200).send(result);
+    }
+  });
+
+  auctionServiceInstance.getAuctionBidsWithinAuction(id);
 });
 
 app.use(bodyParser.json());

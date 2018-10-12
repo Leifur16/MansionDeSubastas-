@@ -67,9 +67,8 @@ class AuctionService extends EventEmitter {
 			})
 	};
 
-
 	createAuction(auction) {
-		Auction.findById(auction.id, (err, auction) => {
+		Auction.findById(auction.id, err => {
 			if (err) {
 				if (err.reason === undefined) {
 					// artist with the provided id exists
@@ -120,8 +119,18 @@ class AuctionService extends EventEmitter {
 	};
 
 	getAuctionBidsWithinAuction(auctionId) {
-		// Your implementation goes here
-        // Should emit a GET_AUCTION_BIDS_WITHIN_AUCTION event when the data is available
+
+			AuctionBid.find({auctionId:auctionId}, (err, bids) => {
+				if (err) {
+					if (err.reason === undefined) {
+						this.emit(this.events.GET_AUCTION_BIDS_WITHIN_AUCTION, err.reason);
+					} else {
+						this.emit(this.events.GET_AUCTION_BIDS_WITHIN_AUCTION);
+					}
+				} else {
+					this.emit(this.events.GET_AUCTION_BIDS_WITHIN_AUCTION, bids);
+				}
+			});
 	};
 
 	placeNewBid(auctionId, customerId, price) {
